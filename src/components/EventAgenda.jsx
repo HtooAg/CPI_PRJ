@@ -1,5 +1,5 @@
-import Vector from "../assets/img/Vector.svg";
-import mainVector from "../assets/img/mainVector.svg";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import "../styles/variable.css";
 
 const events = [
@@ -48,13 +48,31 @@ const events = [
 ];
 
 export default function EventAgenda() {
+	const containerRef = useRef(null);
+	const { scrollYProgress } = useScroll({
+		target: containerRef,
+		offset: ["start end", "end start"],
+	});
+
+	const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+	const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.2, 1, 0.2]);
+
 	return (
-		<div className=" relative min-h-screen bg-[#00205B] p-8 overflow-hidden">
-			{/* Background Whistle SVGs */}
-			<div className="absolute right-70 bottom-20 opacity-20">
+		<motion.div
+			ref={containerRef}
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={{ duration: 0.5 }}
+			id="event_agenda"
+			className="relative min-h-screen bg-[#00205B] p-8 overflow-hidden"
+		>
+			<motion.div
+				style={{ y: backgroundY, opacity }}
+				className="absolute right-30 bottom-40"
+			>
 				<svg
-					width="600"
-					height="820"
+					width="500"
+					height="720"
 					viewBox="0 0 670 960"
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg"
@@ -64,16 +82,20 @@ export default function EventAgenda() {
 						fill="#ADEDEA"
 					/>
 				</svg>
-			</div>
+			</motion.div>
 
 			<div className="z-10 max-w-6xl mx-auto flex flex-col">
-				<div>
-					<h1 className="text-white text-4xl font-semibold mb-8">
+				<motion.div
+					initial={{ opacity: 0, y: -20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.5, delay: 0.2 }}
+				>
+					<h1 className="secondary-teal text-4xl font-semibold mb-8">
 						Event Agenda
 					</h1>
-				</div>
+				</motion.div>
 				<div className="flex ml-18">
-					<div className="opacity-20">
+					<motion.div style={{ opacity }} className="opacity-20">
 						<svg
 							width="70"
 							height="60"
@@ -86,42 +108,84 @@ export default function EventAgenda() {
 								fill="#ADEDEA"
 							/>
 						</svg>
-					</div>
+					</motion.div>
 
 					<div className="relative pl-4">
-						<div className="absolute left-[26px] top-[-20px] bottom-[50px] w-[4px] rounded-4xl bg-[#ADEDEA]"></div>
+						<motion.div className="absolute left-[26px] top-[-20px] bottom-[50px] w-[4px] rounded-4xl bg-[#ADEDEA] origin-top"></motion.div>
 
-						{/* Timeline events */}
 						<div className="grid grid-rows-10 h-[1450px]">
 							{events.map((event, index) => (
-								<div
+								<motion.div
 									key={index}
+									initial={{ opacity: 0, x: -20 }}
+									whileInView={{ opacity: 1, x: 0 }}
+									viewport={{ once: true, amount: 0.5 }}
+									transition={{
+										duration: 0.5,
+										delay: 0.1 * index,
+									}}
 									className="relative flex items-start"
 								>
-									{/* Timeline dot */}
-									<div className="absolute left-[-4px] top-[10px] w-[32px] h-[32px] rounded-full bg-[#ADEDEA]"></div>
+									<motion.div
+										initial={{ scale: 0 }}
+										whileInView={{ scale: 1 }}
+										viewport={{ once: true }}
+										transition={{
+											duration: 0.3,
+											delay: 0.1 * index + 0.3,
+										}}
+										className="absolute left-[-4px] top-[10px] w-[32px] h-[32px] rounded-full bg-[#ADEDEA]"
+									></motion.div>
 
-									{/* Event content */}
 									<div className="ml-10">
-										<p className="text-[#ADEDEA] text-lg">
+										<motion.p
+											initial={{ opacity: 0, y: 10 }}
+											whileInView={{ opacity: 1, y: 0 }}
+											viewport={{ once: true }}
+											transition={{
+												duration: 0.3,
+												delay: 0.1 * index + 0.4,
+											}}
+											className="text-[#ADEDEA] lg:text-lg xs:text-sm"
+										>
 											{event.time}
-										</p>
+										</motion.p>
 										{event.subtitle && (
-											<p className="text-white/80 font-bold text-lg whitespace-pre-line">
+											<motion.p
+												initial={{ opacity: 0, y: 10 }}
+												whileInView={{
+													opacity: 1,
+													y: 0,
+												}}
+												viewport={{ once: true }}
+												transition={{
+													duration: 0.3,
+													delay: 0.1 * index + 0.5,
+												}}
+												className="text-white/80 font-bold lg:text-lg whitespace-pre-line xs:text-sm"
+											>
 												{event.subtitle}
-											</p>
+											</motion.p>
 										)}
-										<p className="text-gray-400 font-regular">
+										<motion.p
+											initial={{ opacity: 0, y: 10 }}
+											whileInView={{ opacity: 1, y: 0 }}
+											viewport={{ once: true }}
+											transition={{
+												duration: 0.3,
+												delay: 0.1 * index + 0.6,
+											}}
+											className="text-gray-400 lg:text-lg whitespace-pre-line xs:text-sm"
+										>
 											{event.title}
-										</p>
-										
+										</motion.p>
 									</div>
-								</div>
+								</motion.div>
 							))}
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</motion.div>
 	);
 }
